@@ -4,8 +4,17 @@ import Calendar from '../lib/components/calendar'
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
-    const [taskRegexp, setTaskRegexp] = useState("")
+    const [taskRegex, setTaskRegex] = useState("")
     const [streak, setStreak] = useState(0)
+    const [taskDates, setTaskDates] = useState([])
+
+    async function handleLoadClick() {
+        // TODO add try-catch and handle errors
+        const { taskDates } = await fetch(`/api/taskDates?taskRegex=${taskRegex}`)
+            .then(res => res.json())
+        setTaskDates(taskDates)
+    }
+
     return (
         <div className={styles.container}>
             <Head>
@@ -18,13 +27,18 @@ export default function Home() {
                     Enter a regular expression matching the tasks to visualize.
                 </h1>
 
-                <input className={styles.input}
-                    value={taskRegexp}
-                    onChange={e => setTaskRegexp(e.target.value)} />
+                <div className={styles.inputSection}>
+                    <input className={styles.input}
+                        value={taskRegex}
+                        onChange={e => setTaskRegex(e.target.value)} />
+                    <button type="button" onClick={handleLoadClick}>
+                        Load
+                    </button>
+                </div>
 
                 <div className={styles.results}>
                     <p className={styles.streak}>
-                        Your current streak for "{taskRegexp}" is {streak} days.
+                        Your current streak for "{taskRegex}" is {streak} days.
                     </p>
                     <Calendar />
                 </div>
