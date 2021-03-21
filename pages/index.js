@@ -10,9 +10,10 @@ export default function Home() {
 
     async function handleLoadClick() {
         // TODO add try-catch and handle errors
-        const { taskDates } = await fetch(`/api/taskDates?taskRegex=${taskRegex}`)
-            .then(res => res.json())
+        const path = `/api/taskDates?taskRegex=${taskRegex}`
+        const { taskDates, streak } = await fetch(path).then(res => res.json())
         setTaskDates(taskDates)
+        setStreak(streak)
     }
 
     return (
@@ -38,6 +39,7 @@ export default function Home() {
 
                 <div className={styles.results}>
                     <p className={styles.streak}>
+                        {/* TODO format for day(s) */}
                         Your current streak for "{taskRegex}" is {streak} days.
                     </p>
                     <Calendar />
