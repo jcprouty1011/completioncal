@@ -6,15 +6,26 @@ import styles from '../styles/Home.module.css'
 export default function Home() {
     const [taskRegex, setTaskRegex] = useState("")
     const [streak, setStreak] = useState(0)
-    const [taskDates, setTaskDates] = useState([])
+    const [taskDates, setTaskDates] = useState()
+    const [error, setError] = useState()
 
     async function handleLoadClick() {
-        // TODO add try-catch and handle errors
         const path = `/api/taskDates?taskRegex=${taskRegex}`
-        const { taskDates, streak } = await fetch(path).then(res => res.json())
-        setTaskDates(taskDates)
-        setStreak(streak)
+        try {
+            const { taskDates, streak } = await fetch(path)
+                .then(res => {
+                    if (res.ok) return res.json()
+                    throw new Error(`The server sent back a ${res.status} error.`)
+                })
+            setTaskDates(taskDates)
+            setStreak(streak)
+        } catch (err) {
+            setError(err)
+        }
+
     }
+
+    const streakText = streak === 1 ? '1 day' : `${streak} days`
 
     return (
         <div className={styles.container}>
@@ -37,13 +48,20 @@ export default function Home() {
                     </button>
                 </div>
 
-                <div className={styles.results}>
-                    <p className={styles.streak}>
-                        {/* TODO format for day(s) */}
-                        Your current streak for "{taskRegex}" is {streak} days.
+                {error && (
+                    <p className={styles.errorMessage}>
+                        {error.message}
                     </p>
-                    <Calendar />
-                </div>
+                )}
+
+                {!error && taskDates && (
+                    <div className={styles.results}>
+                        <p className={styles.streak}>
+                            Your current streak is {streakText}.
+                        </p>
+                        <Calendar />
+                    </div>
+                )}
             </main>
 
             <footer className={styles.footer}>

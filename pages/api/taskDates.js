@@ -2,6 +2,8 @@ import osa from "osa2"
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000
 
+// NOTE currently O(n*log(n)). This can be done in O(n) - won't make
+// any practical difference, but could rewrite as a fun exercise.
 function getStreak(taskDates) {
     const sortedDates = taskDates.map(d => new Date(d)).sort((a, b) => a - b)
     let prevDate = sortedDates.pop()
